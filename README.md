@@ -70,6 +70,16 @@ To update icons in production:
 • Run `yarn run s3:upload`
 • Include `https://hedwig-cdn.s3.amazonaws.com/hedwig/icons.js` in the footer of your document
 
+### 🚧 Testing
+
+```
+yarn test
+```
+
+We use [Jest](https://facebook.github.io/jest/) for unit tests.
+
+We also do [visual regression testing](https://blog.bugsnag.com/implementing-a-visual-css-testing-framework/) using [Nightmare](http://www.nightmarejs.org/). This is useful for detecting visual changes.
+
 ### 📂 Structure
 
 ```
