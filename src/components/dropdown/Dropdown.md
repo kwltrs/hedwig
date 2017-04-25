@@ -1,6 +1,6 @@
 ## Dropdowns
 
-Custom dropdown list
+Custom dropdown list. The list is a progressively enhanced good old fashioned select list.
 
 ### Attributes
 
@@ -14,6 +14,18 @@ Optional:
 
 [data-hw-dropdown-default-selected]   Value of option that should be selected by default
 
+```
+
+
+```html
+<label>
+  Contact us
+  <select name="type" data-hw-dropdown>
+    <option selected="selected" disabled="disabled">Choose reason</option>
+    <option value="enquiry" data-hw-show-parts="enquiry-box">General enquiry</option>
+    <option value="complaints" data-hw-show-parts="complaints-box">Complaints</option>
+  </select>
+</label>
 ```
 
 ```html

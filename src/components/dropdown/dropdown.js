@@ -19,7 +19,8 @@ const HWDropdown = ({
 
   // Module settings object
   const SETTINGS = {
-    elements: qa(dropdownSelector), // All dropdown DOM nodes
+    oldElements: qa(dropdownSelector), // All dropdown DOM nodes
+    newElements: [], // Placeholder for all new elements
   };
 
 
@@ -200,28 +201,79 @@ const HWDropdown = ({
 
 
   /**
+   * @function generateMarkup
+   * @desc Build markup for the enhanced dropdown component
+   * @param {node} dropdown
+   */
+  function generateMarkup(dropdown) {
+    const dropdownName = dropdown.getAttribute('name');
+    const optionElements = qa('option', dropdown);
+    const selectedOption = optionElements.find(o => o.getAttribute('selected') === 'selected');
+    const newOptions = optionElements.map((o) => {
+      return {
+        text: o.innerText,
+        value: o.value,
+        showParts: o.getAttribute('data-hw-show-parts'),
+        disabled: o.getAttribute('disabled'),
+        selected: o.getAttribute('selected'),
+      };
+    });
+
+    // Find attributes
+    const defaultText = selectedOption ? selectedOption.innerText : newOptions[0].innerText;
+    const defaultValue = selectedOption ? selectedOption.value : newOptions[0].value;
+
+    const markup = `
+      <div class="hw-dropdown"
+        data-hw-dropdown="${dropdownName}"
+        data-hw-dropdown-placeholder="${defaultText}"
+        data-hw-dropdown-default-selected="${defaultValue}"
+      >
+        <div class="hw-dropdown__inner">
+          <div class="hw-dropdown__placeholder"></div>
+          <div class="hw-dropdown__arrow"></div>
+          <ul class="hw-dropdown__options">
+            ${newOptions.map(o => `<li class="hw-dropdown__option"${o.name} is ${o.age * 7}</li>`)}
+          </ul>
+        </div>
+      </div>
+    `;
+
+    return markup;
+  }
+
+
+  /**
    * @function init
    * @desc Initialises the dropdown
    */
   function init() {
     // Check if any dropdowns exist, return if not.
-    if (SETTINGS.elements.length < 1) {
+    if (SETTINGS.oldElements.length < 1) {
       return;
     }
 
     // Loop through all dropdowns and initialise each
-    SETTINGS.elements.forEach((dropdown) => {
+    SETTINGS.oldElements.forEach((dropdown) => {
       // Skip if already initialised
       if (dropdown.getAttribute('data-hw-dropdown-initialised') === 'true') { return false; }
 
       // Add aria roles and attributes
-      const targetList = dropdown.getAttribute('data-hw-dropdown');
+      const dropdownName = dropdown.getAttribute('name');
 
+      // Generate markup
+      const markup = generateMarkup(dropdown);
+
+      // Add new element to DOM
+      const newEl = document.createElement('div');
+      newEl.innerHTML = markup;
+      document.body.insertBefore(newEl, dropdown);
+
+      // Create new markup based on settings
       dropdown.setAttribute('data-hw-dropdown-initialised', true);
-      dropdown.setAttribute('aria-controls', targetList);
-      dropdown.setAttribute('aria-role', 'listbox');
-      dropdown.setAttribute('tabindex', '0');
-
+      newEl.setAttribute('aria-controls', dropdownName);
+      newEl.setAttribute('aria-role', 'listbox');
+      newEl.setAttribute('tabindex', '0');
 
       // Find initially selected option, otherwise display placeholder
       const defaultOption = dropdown.getAttribute('data-hw-dropdown-default-selected') || false;
